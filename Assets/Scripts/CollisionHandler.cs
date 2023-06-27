@@ -6,10 +6,17 @@ using UnityEngine.SceneManagement;
 public class CollisionHandler : MonoBehaviour
 {
 
+    [SerializeField] float delay = 1f;
+    [SerializeField] AudioClip crashSound;
+    [SerializeField] AudioClip successSound; 
+
     int currentScreenIndex;
+    AudioSource audioSource;
 
     void Start() {
         currentScreenIndex = SceneManager.GetActiveScene().buildIndex;
+
+        audioSource = GetComponent<AudioSource>();
     }
 
     void OnCollisionEnter(Collision other) 
@@ -21,16 +28,30 @@ public class CollisionHandler : MonoBehaviour
                 Debug.Log("collided to friendly");
                 break;
             case "Finish":
-                NextScene();
+                StartNextSequence();
                 break;
-            case "Fuel":
-                Debug.Log("collided to Fuel");
-                break;
+            // case "Fuel":
+            //     Debug.Log("collided to Fuel");
+            //     break;
              default:
-                ReloadScene();
+                StartCrashSequence();
                 break;
         }
 
+    }
+
+    void StartCrashSequence()
+    {
+        GetComponent<Movement>().enabled = false;
+        PlayAudioClip(crashSound);
+        Invoke("ReloadScene", delay);
+    }
+
+    void StartNextSequence()
+    {
+        GetComponent<Movement>().enabled = false;
+        PlayAudioClip(successSound);
+        Invoke("NextScene", delay);
     }
 
     void ReloadScene()
@@ -51,5 +72,11 @@ public class CollisionHandler : MonoBehaviour
 
         SceneManager.LoadScene(nextScreenIndex);
 
+    }
+
+    void PlayAudioClip(AudioClip audioClip)
+    {    
+        audioSource.PlayOneShot(audioClip);
+            
     }
 }

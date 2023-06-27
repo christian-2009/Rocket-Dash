@@ -7,6 +7,8 @@ public class Movement : MonoBehaviour
 
     [SerializeField] float mainThrust = 100f;
     [SerializeField] float rotationThrust = 100f;
+    [SerializeField] AudioClip mainEngine;
+
     Rigidbody rb;
     AudioSource audioSource;
 
@@ -23,7 +25,7 @@ public class Movement : MonoBehaviour
     {
         ProcessThrust();
         ProcessRotation();
-        // Debug.Log();
+        
     }
 
     void ProcessThrust()
@@ -35,7 +37,7 @@ public class Movement : MonoBehaviour
 
             if(!audioSource.isPlaying)
             {
-                audioSource.Play();
+                audioSource.PlayOneShot(mainEngine);
             }
         }else  {
             audioSource.Pause();
@@ -58,7 +60,7 @@ public class Movement : MonoBehaviour
     }
     void ApplyRotation(float rotationThrust) 
     {
-        rb.freezeRotation = true; //freezing rotation so we can manually rotate
+        rb.freezeRotation = true; //freezing rotation so we can manually rotate - prevents the ground rotating our objects
         transform.Rotate( Vector3.forward * rotationThrust * Time.deltaTime);
         rb.freezeRotation = false;
     }
