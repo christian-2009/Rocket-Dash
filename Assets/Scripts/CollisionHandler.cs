@@ -9,9 +9,12 @@ public class CollisionHandler : MonoBehaviour
     [SerializeField] float delay = 1f;
     [SerializeField] AudioClip crashSound;
     [SerializeField] AudioClip successSound; 
+    [SerializeField] ParticleSystem crashParticles;
+    [SerializeField] ParticleSystem successParticles; 
 
     int currentScreenIndex;
     AudioSource audioSource;
+    bool isTransitioning = false;
 
     void Start() {
         currentScreenIndex = SceneManager.GetActiveScene().buildIndex;
@@ -21,19 +24,19 @@ public class CollisionHandler : MonoBehaviour
 
     void OnCollisionEnter(Collision other) 
     {
-        
+        if(isTransitioning)
+        {
+            return;
+        }
+
         switch (other.gameObject.tag)
         {
             case "Friendly":
-                Debug.Log("collided to friendly");
                 break;
             case "Finish":
                 StartNextSequence();
                 break;
-            // case "Fuel":
-            //     Debug.Log("collided to Fuel");
-            //     break;
-             default:
+            default:
                 StartCrashSequence();
                 break;
         }
@@ -42,14 +45,20 @@ public class CollisionHandler : MonoBehaviour
 
     void StartCrashSequence()
     {
+        isTransitioning = true;
+        audioSource.Stop();
         GetComponent<Movement>().enabled = false;
+        crashParticles.Play();
         PlayAudioClip(crashSound);
         Invoke("ReloadScene", delay);
     }
 
     void StartNextSequence()
     {
+        isTransitioning = true;
+        audioSource.Stop();
         GetComponent<Movement>().enabled = false;
+        successParticles.Play();
         PlayAudioClip(successSound);
         Invoke("NextScene", delay);
     }
