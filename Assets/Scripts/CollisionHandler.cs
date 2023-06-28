@@ -15,6 +15,7 @@ public class CollisionHandler : MonoBehaviour
     int currentScreenIndex;
     AudioSource audioSource;
     bool isTransitioning = false;
+    bool noCollisions = false; 
 
     void Start() {
         currentScreenIndex = SceneManager.GetActiveScene().buildIndex;
@@ -22,13 +23,30 @@ public class CollisionHandler : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
+    void Update() 
+    {
+        HandleDebugKeys();
+    }
+
+    void HandleDebugKeys()
+    {
+        if(Input.GetKeyDown(KeyCode.L))
+        {
+            NextScene();
+        } else if (Input.GetKeyDown(KeyCode.C))
+        {
+               noCollisions = !noCollisions;   
+        }
+    }
+    
+
     void OnCollisionEnter(Collision other) 
     {
-        if(isTransitioning)
+        if(isTransitioning || noCollisions)
         {
             return;
         }
-
+       
         switch (other.gameObject.tag)
         {
             case "Friendly":

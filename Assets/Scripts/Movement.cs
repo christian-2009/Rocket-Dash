@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Movement : MonoBehaviour
 {
 
@@ -15,6 +16,7 @@ public class Movement : MonoBehaviour
 
     Rigidbody rb;
     AudioSource audioSource;
+
 
     // Start is called before the first frame update
     void Start()
@@ -36,9 +38,33 @@ public class Movement : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.Space))
         {
-            
-            rb.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
+            StartThrusting();
+        }else  {
+            StopThrusting();
+        }
 
+    }
+
+    void ProcessRotation() 
+    {
+    
+        if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+        {
+            StartRotatingLeft();
+        }
+        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+        {
+            StartRotatingRight();
+        }
+        else {
+            StopRotating();
+        } 
+
+    }
+
+    void StartThrusting()
+    {
+        rb.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
 
             if(!audioSource.isPlaying)
             {
@@ -49,40 +75,38 @@ public class Movement : MonoBehaviour
             {
                 mainBoosterParticles.Play();
             }
-        }else  {
-            audioSource.Pause();
-            mainBoosterParticles.Stop();
-  
-        }
-
     }
 
-    void ProcessRotation() 
+    void StopThrusting() 
     {
-    
-        if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
-        {
-  
-            if(!rightBoosterParticles.isPlaying)
+        audioSource.Pause();
+        mainBoosterParticles.Stop();
+    }
+
+    void StartRotatingLeft() 
+    {
+        if(!rightBoosterParticles.isPlaying)
             {
                 rightBoosterParticles.Play();
             }
             ApplyRotation(rotationThrust);
-        }
-        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-        {
-            if(!leftBoosterParticles.isPlaying)
+    }
+
+    void StartRotatingRight()
+    {
+        if(!leftBoosterParticles.isPlaying)
             {
                 leftBoosterParticles.Play();
             }
             ApplyRotation(-rotationThrust);
-        }
-        else {
-            leftBoosterParticles.Stop();
-            rightBoosterParticles.Stop();
-        } 
-
     }
+
+    void StopRotating()
+    {   
+        leftBoosterParticles.Stop();
+        rightBoosterParticles.Stop();
+    }
+
     void ApplyRotation(float rotationThrust) 
     {
         rb.freezeRotation = true; //freezing rotation so we can manually rotate - prevents the ground rotating our objects
